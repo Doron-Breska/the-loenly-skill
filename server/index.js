@@ -14,12 +14,7 @@ app.use(cors());
 const connectMongoose = () => {
   mongoose
     .connect(process.env.MONGO_URI)
-    .then(() =>
-      console.log(
-        "Connection to MongoDB established, and server is running on port " +
-          port
-      )
-    )
+    .then(() => console.log("Connection to MongoDB established"))
 
     .catch((err) => console.log(err));
 };
