@@ -20,6 +20,11 @@ const connectMongoose = () => {
 };
 connectMongoose();
 
+const connectRoutes = () => {
+  app.use("/api/users", userRouter);
+};
+connectRoutes();
+
 app.listen(port, () => {
   console.log("server running on port:", port);
 });

@@ -1,17 +1,19 @@
-import multer from "multer";
-import path from "path";
+import bcrypt from "bcrypt";
 
-// for single file
-const multerUpload = multer({
-  storage: multer.diskStorage({}),
-  fileFilter: (req, file, cb) => {
-    let extension = path.extname(file.originalname);
-    if (extension !== ".jpg" && extension !== ".jpeg" && extension !== ".png") {
-      cb(new Error("File extension not supported"), false);
-      return;
-    }
-    cb(null, true);
-  },
-});
+const encryptPassword = async (password) => {
+  try {
+    const saltRounds = 10;
+    const salt = await bcrypt.genSalt(saltRounds);
+    const hashPassword = await bcrypt.hash(password, salt);
+    return hashPassword;
+  } catch (error) {
+    console.log("Error: ", error);
+  }
+};
 
-export { multerUpload };
+const verifyPassword = async (password, hashedPassword) => {
+  const verified = bcrypt.compare(password, hashedPassword);
+  return verified;
+};
+
+export { encryptPassword, verifyPassword };

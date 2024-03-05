@@ -32,14 +32,6 @@ const UserSchema = new Schema(
       required: true,
       unique: true,
       index: true,
-      validate: {
-        validator: function (v) {
-          var re =
-            /^(([^<>()\]\\.,;:\s@"]+(\.[^<>()\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
-          return re.test(v);
-        },
-        message: (props) => `${props.value} is not a valid email!`,
-      },
     },
     //////////// must have gps to sign up - to look for dynamic location services
     location: {
