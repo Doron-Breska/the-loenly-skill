@@ -23,6 +23,6 @@ const MessageSchema = new Schema(
   { timestamps: true }
 );
 
-const MessageModel = mongoose.model("message", MessageSchema);
+const MessageModal = mongoose.model("message", MessageSchema);
 
-export default MessageModel;
+export default MessageModal;

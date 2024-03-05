@@ -22,5 +22,5 @@ const SkillSchema = new Schema(
   { timestamps: true }
 );
 
-const SkillModel = mongoose.model("skill", SkillSchema);
-export default SkillModel;
+const SkillModal = mongoose.model("skill", SkillSchema);
+export default SkillModal;

@@ -1,4 +1,4 @@
-import UserModel from "../modals/userModal";
+import UserModel from "../modals/userModal.js";
 import { imageUpload } from "../utils/imageMangement.js";
 import { verifyPassword, encryptPassword } from "../utils/bcrypt.js";
 import { generateToken } from "../utils/jwt.js";
