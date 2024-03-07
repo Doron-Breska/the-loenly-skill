@@ -37,21 +37,20 @@ const createUser = async (req, res) => {
     const registeredUser = await newUser.save();
     res.status(200).json({
       msg: "Successfully registered!",
+      user: newUser,
     });
     console.log("registeredUser ----", registeredUser);
   } catch (error) {
-    console.log(error);
-    if (error.code === 11000) {
-      let field = error.keyValue;
-      let errorField = Object.keys(field)[0]; // getting the field that caused the error
-      res.status(409).json({
-        error: `The ${errorField} '${field[errorField]}' is already in use, please try something different`,
-      });
+    if (error.name === "ValidationError") {
+      const messages = Object.values(error.errors).map((val) => val.message);
+      res.status(400).json({ errors: messages });
+    } else if (error.code === 11000) {
+      const field = Object.keys(error.keyValue)[0];
+      res
+        .status(409)
+        .json({ error: `An account with that ${field} already exists.` });
     } else {
-      res.status(500).json({
-        error:
-          "Something went wrong with your registration - back end controller function ",
-      });
+      res.status(500).json({ error: "Something went wrong" });
     }
   }
 };
