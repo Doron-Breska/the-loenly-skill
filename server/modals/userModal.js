@@ -36,8 +36,8 @@ const UserSchema = new Schema(
       index: true,
     },
     //////////// must have gps to sign up - to look for dynamic location services
-    location: {
-      type: String,
+    coordinates: {
+      type: [Number], // array of numbers for [longitude, latitude]
       required: true,
     },
     username: {

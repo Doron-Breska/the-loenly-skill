@@ -12,7 +12,7 @@ const createUser = async (req, res) => {
     !req.body.bio ||
     !req.body.sex ||
     !req.body.userType ||
-    !req.body.location
+    !req.body.coordinates
   ) {
     return res.status(406).json({ error: "Please fill out all fields" });
   }
@@ -55,4 +55,39 @@ const createUser = async (req, res) => {
   }
 };
 
-export { createUser };
+const login = async (req, res) => {
+  try {
+    const existingUser = await UserModel.findOne({ email: req.body.email });
+
+    if (!existingUser) {
+      return res.status(404).json({ error: "no user found" });
+    }
+    const verified = await verifyPassword(
+      req.body.password,
+      existingUser.password
+    );
+
+    if (!verified) {
+      return res.status(406).json({ error: "password doesn't match" });
+    }
+    const token = generateToken(existingUser);
+
+    res.status(200).json({
+      verified: true,
+      token: token,
+      user: {
+        _id: existingUser._id,
+        email: existingUser.email,
+        username: existingUser.username,
+        role: existingUser.userType,
+      },
+    });
+  } catch (error) {
+    console.log(e);
+    res.status(500).json({
+      error: "something went wrong with logging you in - back end function",
+    });
+  }
+};
+
+export { createUser, login };
