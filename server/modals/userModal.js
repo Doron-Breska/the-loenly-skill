@@ -5,9 +5,9 @@ const UserSchema = new Schema(
   {
     userType: {
       type: String,
-      // enum: ["regular", "premium", "admin"],
-      // required: true,
-      // default: "regular",
+      enum: ["regular", "premium", "admin"],
+      required: true,
+      default: "regular",
     },
     verified: {
       type: Boolean,
@@ -53,7 +53,7 @@ const UserSchema = new Schema(
       type: String,
       required: true,
     },
-    userImg: {
+    user_img: {
       type: [String],
       default: [
         "https://res.cloudinary.com/danq3q4qv/image/upload/v1683035195/avatars/default-profile-picture-avatar-photo-placeholder-vector-illustration-700-205664584_z4jvlo.jpg",
@@ -81,15 +81,15 @@ const UserSchema = new Schema(
     ],
     sex: {
       type: String,
-      // enum: [
-      //   "Male",
-      //   "Female",
-      //   "Non-Binary",
-      //   "Transgender",
-      //   "Intersex",
-      //   "Prefer Not to Say",
-      //   "Other",
-      // ],
+      enum: [
+        "Male",
+        "Female",
+        "Non-Binary",
+        "Transgender",
+        "Intersex",
+        "Prefer Not to Say",
+        "Other",
+      ],
       required: true,
     },
     feedback: [

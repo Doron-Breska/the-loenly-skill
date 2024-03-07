@@ -16,13 +16,14 @@ const createUser = async (req, res) => {
   ) {
     return res.status(406).json({ error: "Please fill out all fields" });
   }
-  const userImg = await imageUpload(req.file, "skills-users");
+  console.log("this is the req.body :", req.body);
+  const user_img = await imageUpload(req.file, "skills-users");
   const encryptedPassword = await encryptPassword(req.body.password);
   const newUser = new UserModel({
     ...req.body,
     password: encryptedPassword,
     skills: [],
-    useImg: userImg,
+    user_img: user_img,
     hasMet: [],
     feedback: [],
     chats: [],
@@ -47,12 +48,10 @@ const createUser = async (req, res) => {
         error: `The ${errorField} '${field[errorField]}' is already in use, please try something different`,
       });
     } else {
-      res
-        .status(500)
-        .json({
-          error:
-            "Something went wrong with your registration - back end controller function ",
-        });
+      res.status(500).json({
+        error:
+          "Something went wrong with your registration - back end controller function ",
+      });
     }
   }
 };
