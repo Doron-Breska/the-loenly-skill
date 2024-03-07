@@ -4,6 +4,6 @@ import { multerUpload } from "../middlewares/multer.js";
 
 const userRouter = express.Router();
 
-userRouter.post("/new", multerUpload.single("skillsuser"), createUser);
+userRouter.post("/new", multerUpload.single("userImg"), createUser);
 
 export default userRouter;

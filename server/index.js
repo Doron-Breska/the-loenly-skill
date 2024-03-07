@@ -3,6 +3,7 @@ import cors from "cors";
 import mongoose from "mongoose";
 import * as dotenv from "dotenv";
 import userRouter from "../server/routes/userRoutes.js";
+import cloudinaryConfig from "./configs/cloudinary.js";
 
 dotenv.config();
 
@@ -21,6 +22,7 @@ const connectMongoose = () => {
     .catch((err) => console.log(err));
 };
 connectMongoose();
+cloudinaryConfig();
 
 const connectRoutes = () => {
   app.use("/api/users", userRouter);
