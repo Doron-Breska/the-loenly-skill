@@ -39,7 +39,7 @@ const createUser = async (req, res) => {
       msg: "Successfully registered!",
       user: newUser,
     });
-    console.log("registeredUser ----", registeredUser);
+    // console.log("registeredUser ----", registeredUser);
   } catch (error) {
     if (error.name === "ValidationError") {
       const messages = Object.values(error.errors).map((val) => val.message);
