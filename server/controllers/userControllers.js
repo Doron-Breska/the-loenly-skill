@@ -11,19 +11,22 @@ const createUser = async (req, res) => {
     !req.body.age ||
     !req.body.bio ||
     !req.body.sex ||
-    !req.body.userType ||
-    !req.body.coordinates
+    !req.body.latitude ||
+    !req.body.longitude
   ) {
     return res.status(406).json({ error: "Please fill out all fields" });
   }
   console.log("this is the req.body :", req.body);
-  const user_img = await imageUpload(req.file, "skills-users");
+  const userImg = await imageUpload(req.file, "skills-users");
   const encryptedPassword = await encryptPassword(req.body.password);
   const newUser = new UserModel({
     ...req.body,
+    latitude: Number(req.body.latitude),
+    longitude: Number(req.body.longitude),
+    userType: "Regular",
     password: encryptedPassword,
     skills: [],
-    user_img: user_img,
+    userImg: userImg,
     hasMet: [],
     feedback: [],
     chats: [],

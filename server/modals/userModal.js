@@ -6,9 +6,9 @@ const UserSchema = new Schema(
   {
     userType: {
       type: String,
-      enum: ["regular", "premium", "admin"],
+      enum: ["Regular", "Premium", "Admin"],
       required: true,
-      default: "regular",
+      default: "Regular",
     },
     verified: {
       type: Boolean,
@@ -36,8 +36,12 @@ const UserSchema = new Schema(
       index: true,
     },
     //////////// must have gps to sign up - to look for dynamic location services
-    coordinates: {
-      type: [Number], // array of numbers for [longitude, latitude]
+    latitude: {
+      type: Number,
+      required: true,
+    },
+    longitude: {
+      type: Number,
       required: true,
     },
     username: {
@@ -55,7 +59,7 @@ const UserSchema = new Schema(
       type: String,
       required: true,
     },
-    user_img: {
+    userImg: {
       type: [String],
       default: [
         "https://res.cloudinary.com/danq3q4qv/image/upload/v1683035195/avatars/default-profile-picture-avatar-photo-placeholder-vector-illustration-700-205664584_z4jvlo.jpg",

@@ -11,7 +11,7 @@ const Navbar = () => {
   const activePath = useActivePath();
 
   return (
-    <div>
+    <div style={{ display: "flex", justifyContent: "space-around" }}>
       <NavLink className={activePath === "/" ? "active" : ""} to="/">
         Home
       </NavLink>
@@ -28,7 +28,7 @@ const Navbar = () => {
         Registration
       </NavLink>
       <NavLink className={activePath === "/chats" ? "active" : ""} to="/chats">
-        Registration
+        Chats
       </NavLink>
     </div>
   );
