@@ -37,14 +37,17 @@ export interface Message {
 
 export interface User {
   _id: string;
+  bio: string;
+  blockedUsers: string[];
   userType: UserType;
   email: string;
+  verified: boolean;
   latitude: number;
   longitude: number;
   username: string;
+  reportCounter: number;
   age: number;
   userImg: string[]; 
-  description: string;
   skills: Skill[];
   sex: Sex;
   feedback: Feedback[];

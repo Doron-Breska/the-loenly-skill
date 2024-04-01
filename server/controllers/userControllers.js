@@ -63,7 +63,7 @@ const login = async (req, res) => {
     const existingUser = await UserModel.findOne({ email: req.body.email });
 
     if (!existingUser) {
-      return res.status(404).json({ error: "no user found" });
+      return res.status(404).json({ error: "No user found" });
     }
     const verified = await verifyPassword(
       req.body.password,
@@ -71,7 +71,7 @@ const login = async (req, res) => {
     );
 
     if (!verified) {
-      return res.status(406).json({ error: "password doesn't match" });
+      return res.status(406).json({ error: "Password doesn't match" });
     }
     const token = generateToken(existingUser);
 
@@ -80,9 +80,23 @@ const login = async (req, res) => {
       token: token,
       user: {
         _id: existingUser._id,
+        userType: existingUser.userType,
+        verified: existingUser.verified,
+        // isBanned: existingUser.isBanned,
+        blockedUsers: existingUser.blockedUsers,
+        // reportCounter: existingUser.reportCounter,
         email: existingUser.email,
+        latitude: existingUser.latitude,
+        longitude: existingUser.longitude,
         username: existingUser.username,
-        role: existingUser.userType,
+        age: existingUser.age,
+        userImg: existingUser.userImg,
+        bio: existingUser.bio,
+        skills: existingUser.skills,
+        sex: existingUser.sex,
+        feedback: existingUser.feedback,
+        chats: existingUser.chats,
+        hasMet: existingUser.hasMet,
       },
     });
   } catch (error) {
