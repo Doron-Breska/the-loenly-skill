@@ -4,7 +4,8 @@ import mongoose from "mongoose";
 import * as dotenv from "dotenv";
 import userRouter from "../server/routes/userRoutes.js";
 import cloudinaryConfig from "./configs/cloudinary.js";
-
+import { passportConfig } from "./configs/passport.js";
+// import passport from "passport";
 dotenv.config();
 
 const app = express();
@@ -23,6 +24,8 @@ const connectMongoose = () => {
 };
 connectMongoose();
 cloudinaryConfig();
+passportConfig();
+// app.use(passport.initialize());
 
 const connectRoutes = () => {
   app.use("/api/users", userRouter);

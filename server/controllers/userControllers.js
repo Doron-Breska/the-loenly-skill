@@ -107,4 +107,36 @@ const login = async (req, res) => {
   }
 };
 
-export { createUser, login };
+const getActiveUser = async (req, res) => {
+  try {
+    const user = req.user; // Access the user object from req.user cause in passport.js i get the whole user object
+    res.status(200).json({
+      status: "Success",
+      activeUser: {
+        _id: user._id,
+        userType: user.userType,
+        verified: user.verified,
+        // isBanned: existingUser.isBanned,
+        blockedUsers: user.blockedUsers,
+        // reportCounter: existingUser.reportCounter,
+        email: user.email,
+        latitude: user.latitude,
+        longitude: user.longitude,
+        username: user.username,
+        age: user.age,
+        userImg: user.userImg,
+        bio: user.bio,
+        skills: user.skills,
+        sex: user.sex,
+        feedback: user.feedback,
+        chats: user.chats,
+        hasMet: user.hasMet,
+      },
+    });
+  } catch (error) {
+    console.error("Error:", error);
+    res.status(500).json({ status: "Error", message: "Internal server error" });
+  }
+};
+
+export { createUser, login, getActiveUser };

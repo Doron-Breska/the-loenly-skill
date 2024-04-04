@@ -20,11 +20,7 @@ const Login = () => {
         }
       );
       console.log("this is the results of the fetch", response);
-      if (response.status === 404) {
-        console.log("No user found");
-      } else if (response.status === 406) {
-        console.log("Password doesn't match");
-      }
+      localStorage.setItem("token", response.data.token);
     } catch (error) {
       // First, assert the error is of the type AxiosError
       if (axios.isAxiosError(error)) {
@@ -38,6 +34,11 @@ const Login = () => {
             console.log("password doesnot match");
           }
         }
+      } else {
+        console.log(
+          "something went wrong, front end login func, catch clock, this is the error object -",
+          error
+        );
       }
     }
   };

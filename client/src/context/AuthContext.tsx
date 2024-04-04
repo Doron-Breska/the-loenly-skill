@@ -61,12 +61,32 @@ export const AuthContextProvider = ({ children }: { children: ReactNode }) => {
         return;
       } else {
         setUser(response.data.user);
+        localStorage.setItem("token", response.data.token);
         console.log(
-          "test for context function to set the user object after log in"
+          "test for context function to set the user object after log in",
+          "this is the user object after login- ",
+          user
         );
       }
     } catch (error) {
-      console.log("Something went wrong with the front end login function");
+      // First, assert the error is of the type AxiosError
+      if (axios.isAxiosError(error)) {
+        // Now we know it's an AxiosError, and we can access its properties, like response
+        if (error.response) {
+          // Now that we know error.response exists, we can safely check its status
+          if (error.response.status === 404) {
+            console.log("No user found");
+          }
+          if (error.response.status === 406) {
+            console.log("password doesnot match");
+          }
+        }
+      } else {
+        console.log(
+          "something went wrong, front end login func, catch clock, this is the error object -",
+          error
+        );
+      }
     }
   };
   //   const login = async (email: string, password: string) => {
@@ -143,28 +163,21 @@ export const AuthContextProvider = ({ children }: { children: ReactNode }) => {
   }, []);
 
   const fetchActiveUser = async (token: string) => {
-    // const myHeaders = new Headers();
-    // myHeaders.append("Authorization", `Bearer ${token}`);
-    // const requestOptions = {
-    //   method: "GET",
-    //   headers: myHeaders,
-    // };
-    //     try {
-    //       const response = await fetch(
-    //         `${serverURL}/api/users/active`,
-    //         requestOptions
-    //       );
-    //       if (!response.ok) {
-    //         const errorData = await response.json();
-    //         setModalContent(errorData.error);
-    //         return;
-    //       }
-    //       const result = await response.json();
-    //       // console.log("active user result:", result);
-    //       setUser(result);
-    //     } catch (error) {
-    //       console.log(error);
-    //     }
+    try {
+      const response = await axios.get(
+        "http://localhost:5005/api/users/active",
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+
+      // Assuming 'setUser' is a function that updates your user state
+      setUser(response.data.activeUser);
+    } catch (error) {
+      console.log(error);
+    }
   };
 
   useEffect(() => {
