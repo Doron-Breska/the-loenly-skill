@@ -45,7 +45,7 @@ export const AuthContext = createContext<AuthContextType>(initialAuth);
 export const AuthContextProvider = ({ children }: { children: ReactNode }) => {
   const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(false);
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+
   const Login = async (email: string, password: string) => {
     try {
       const response = await axios.post(
@@ -56,18 +56,13 @@ export const AuthContextProvider = ({ children }: { children: ReactNode }) => {
         }
       );
       console.log("this is the results of the fetch", response);
-      if (response.statusText !== "OK") {
-        console.log("something went wrong with the context login function ");
-        return;
-      } else {
-        setUser(response.data.user);
-        localStorage.setItem("token", response.data.token);
-        console.log(
-          "test for context function to set the user object after log in",
-          "this is the user object after login- ",
-          user
-        );
-      }
+      setUser(response.data.user);
+      localStorage.setItem("token", response.data.token);
+      //Axios instances have a default behavior where any response
+      //with a status code outside the range of 2xx causes the
+      //promise to be rejected.This means that it automatically
+      //enters the catch block if the HTTP status
+      //code indicates an error(such as 404 or 406).
     } catch (error) {
       // First, assert the error is of the type AxiosError
       if (axios.isAxiosError(error)) {
@@ -132,34 +127,12 @@ export const AuthContextProvider = ({ children }: { children: ReactNode }) => {
     localStorage.removeItem("token");
   };
 
-  //old version start
-  // const checkForToken = () => {
-  //   const token = localStorage.getItem("token");
-  //   if (token) {
-  //     console.log("There is a token")
-  //   } else {
-  //     console.log("There is no token")
-  //   }
-  // }
-
-  //  useEffect(() => {
-  //   const token = localStorage.getItem("token");
-  //   if (token) {
-  //     fetchActiveUser(token);
-  //   }
-  // }, []);
-
-  // old version end
-
   const checkForToken = useCallback(() => {
     const token = localStorage.getItem("token");
     if (token) {
-      // console.log("There is a token");
       fetchActiveUser(token);
     } else {
-      // console.log("There is no token");
     }
-    //eslint-disable-next-line
   }, []);
 
   const fetchActiveUser = async (token: string) => {
