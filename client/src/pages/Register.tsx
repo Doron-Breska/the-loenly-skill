@@ -50,7 +50,7 @@ const Register = () => {
       console.error("Please fill out all required fields");
       alert("Please fill out all required fields");
       return;
-    } else if (!location.latitude || location.longitude) {
+    } else if (!location.latitude || !location.longitude) {
       console.error("Allow acces to  GPS / location services");
       alert("Allow acces to  GPS / location services");
 

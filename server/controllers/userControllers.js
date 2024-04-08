@@ -30,6 +30,7 @@ const createUser = async (req, res) => {
     hasMet: [],
     feedback: [],
     chats: [],
+    blockedByUsers: [],
     blockedUsers: [],
     verified: false,
     isBanned: false,
@@ -84,6 +85,7 @@ const login = async (req, res) => {
         verified: existingUser.verified,
         // isBanned: existingUser.isBanned,
         blockedUsers: existingUser.blockedUsers,
+        blockedByUsers: existingUser.blockedByUsers,
         // reportCounter: existingUser.reportCounter,
         email: existingUser.email,
         latitude: existingUser.latitude,
@@ -118,6 +120,7 @@ const getActiveUser = async (req, res) => {
         verified: user.verified,
         // isBanned: existingUser.isBanned,
         blockedUsers: user.blockedUsers,
+        blockedByUsers: user.blockedByUsers,
         // reportCounter: existingUser.reportCounter,
         email: user.email,
         latitude: user.latitude,
@@ -139,4 +142,40 @@ const getActiveUser = async (req, res) => {
   }
 };
 
-export { createUser, login, getActiveUser };
+// const getAllUsers = async (req, res) => {
+//   try {
+//     // const currentUserId = req.user._id;
+
+//     const users = await UserModel.find().lean();
+//     res.json(users);
+//   } catch (error) {
+//     console.error(error);
+//     res.status(500).json({ message: "Error fetching users" });
+//   }
+// };
+const getAllUsers = async (req, res) => {
+  try {
+    const currentUserId = req.user._id;
+
+    const { blockedUsers, blockedByUsers } = req.user;
+
+    // Combine the IDs to exclude: the current user, users they've blocked, and users who have blocked them.
+    const excludeIds = [
+      currentUserId,
+      ...(blockedUsers || []), // Ensure arrays are provided, defaulting to empty if not present
+      ...(blockedByUsers || []),
+    ];
+
+    // Fetch all users excluding those in the excludeIds array
+    const users = await UserModel.find({
+      _id: { $nin: excludeIds }, // Use $nin to exclude all IDs in the array
+    }).lean();
+
+    res.json(users);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: "Error fetching users" });
+  }
+};
+
+export { createUser, login, getActiveUser, getAllUsers };

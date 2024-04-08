@@ -24,6 +24,12 @@ const UserSchema = new Schema(
         ref: "user",
       },
     ],
+    blockedByUsers: [
+      {
+        type: Schema.Types.ObjectId,
+        ref: "user",
+      },
+    ],
     reportCounter: {
       type: Number,
       default: 0,
