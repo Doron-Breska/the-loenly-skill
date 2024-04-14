@@ -142,17 +142,6 @@ const getActiveUser = async (req, res) => {
   }
 };
 
-// const getAllUsers = async (req, res) => {
-//   try {
-//     // const currentUserId = req.user._id;
-
-//     const users = await UserModel.find().lean();
-//     res.json(users);
-//   } catch (error) {
-//     console.error(error);
-//     res.status(500).json({ message: "Error fetching users" });
-//   }
-// };
 const getAllUsers = async (req, res) => {
   try {
     const currentUserId = req.user._id;
@@ -171,7 +160,7 @@ const getAllUsers = async (req, res) => {
       _id: { $nin: excludeIds }, // Use $nin to exclude all IDs in the array
     }).lean();
 
-    res.json(users);
+    res.status(200).json({ status: "Success", users: users });
   } catch (error) {
     console.error(error);
     res.status(500).json({ message: "Error fetching users" });
