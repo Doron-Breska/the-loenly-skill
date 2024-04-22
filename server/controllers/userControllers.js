@@ -2,6 +2,7 @@ import UserModel from "../modals/userModal.js";
 import { imageUpload } from "../utils/imageManagement.js";
 import { verifyPassword, encryptPassword } from "../utils/bcrypt.js";
 import { generateToken } from "../utils/jwt.js";
+import mongoose from "mongoose";
 
 const createUser = async (req, res) => {
   if (
@@ -167,4 +168,78 @@ const getAllUsers = async (req, res) => {
   }
 };
 
-export { createUser, login, getActiveUser, getAllUsers };
+const getAllUsersNoFilter = async (req, res) => {
+  try {
+    const users = await UserModel.find().lean();
+
+    res.status(200).json({ status: "Success", users: users });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: "Error fetching users" });
+  }
+};
+
+const blockUser = async (req, res) => {
+  const currentUserId = req.user._id; // ID of the current user
+  const { userIdToBlock } = req.body; // ID of the user to block, passed via URL parameter
+
+  if (!mongoose.Types.ObjectId.isValid(userIdToBlock)) {
+    return res.status(400).json({ message: "Invalid user ID to block" });
+  }
+
+  if (currentUserId === userIdToBlock) {
+    return res.status(400).json({ message: "Cannot block oneself" });
+  }
+
+  try {
+    // Perform a transaction to ensure both operations are successful
+    const session = await mongoose.startSession();
+    session.startTransaction();
+
+    try {
+      // Add userIdToBlock to the current user's blockedUsers array
+      const blockerUpdate = await UserModel.findByIdAndUpdate(
+        currentUserId,
+        { $addToSet: { blockedUsers: userIdToBlock } },
+        { new: true, session }
+      );
+
+      // Add currentUserId to the blocked user's blockedByUsers array
+      const blockedUpdate = await UserModel.findByIdAndUpdate(
+        userIdToBlock,
+        { $addToSet: { blockedByUsers: currentUserId } },
+        { new: true, session }
+      );
+
+      if (!blockerUpdate || !blockedUpdate) {
+        throw new Error("Update failed");
+      }
+
+      // If both operations are successful, commit the transaction
+      await session.commitTransaction();
+      session.endSession();
+      res.status(200).json({ message: "User successfully blocked" });
+    } catch (error) {
+      // If there's an error during the transaction, abort it
+      await session.abortTransaction();
+      session.endSession();
+      res
+        .status(500)
+        .json({ message: "Failed to block user", error: error.message });
+    }
+  } catch (error) {
+    console.error("Error blocking user: ", error);
+    res
+      .status(500)
+      .json({ message: "Failed to block user", error: error.message });
+  }
+};
+
+export {
+  createUser,
+  login,
+  getActiveUser,
+  getAllUsers,
+  getAllUsersNoFilter,
+  blockUser,
+};
