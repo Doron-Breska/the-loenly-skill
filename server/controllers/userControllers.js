@@ -180,6 +180,7 @@ const getAllUsersNoFilter = async (req, res) => {
 };
 
 const blockUser = async (req, res) => {
+  console.log("Request body:", req.body);
   const currentUserId = req.user._id; // ID of the current user
   const { userIdToBlock } = req.body; // ID of the user to block, passed via URL parameter
 

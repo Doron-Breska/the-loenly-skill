@@ -17,7 +17,7 @@ const Home = () => {
         "http://localhost:5005/api/users/all-users",
         {
           headers: {
-            Authorization: `Bearer ${token}`, // Assuming the token is stored in the user context
+            Authorization: `Bearer ${token}`,
           },
         }
       );
@@ -31,23 +31,28 @@ const Home = () => {
     getAllUsers();
   }, [user]);
 
-  const blockUser = async (user_id: string) => {
-    const response = await fetch(`/api/users/block/${user_id}`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${token}`,
-      },
-    });
+  const blockUser = async (userId: string) => {
+    try {
+      const response = await axios.post(
+        `http://localhost:5005/api/users/block`,
+        { userIdToBlock: userId },
+        {
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
 
-    if (!response.ok) {
-      const message = `An error occurred: ${response.statusText}`;
-      console.error(message);
-      return;
+      console.log("User blocked:", response.data);
+      // You may want to call getAllUsers() here to refresh the user list
+    } catch (error) {
+      if (axios.isAxiosError(error)) {
+        console.error("An error occurred:", error.message);
+      } else {
+        console.error("An error occurred:", error);
+      }
     }
-
-    const result = await response.json();
-    console.log("User blocked:", result);
   };
 
   return (
@@ -59,6 +64,7 @@ const Home = () => {
         {users ? (
           users.map((singleUser: any) => (
             <div
+              key={singleUser._id}
               style={{
                 border: "2px solid black",
               }}
@@ -69,7 +75,7 @@ const Home = () => {
               <h2>this is the longitude : {singleUser.longitude}</h2>
               <button
                 onClick={() => {
-                  blockUser(singleUser.user_id);
+                  blockUser(singleUser._id);
                 }}
               >
                 block
