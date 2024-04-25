@@ -36,6 +36,7 @@ export interface Message {
 
 
 export interface User {
+  img: any;
   _id: string;
   bio: string;
   blockedUsers: string[];

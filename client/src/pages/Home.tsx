@@ -1,6 +1,7 @@
 import React, { useContext, useEffect, useState } from "react";
 import { AuthContext } from "../context/AuthContext";
 import axios from "axios";
+import Map from "../components/Map";
 // import { User } from "../types";
 
 const Home = () => {
@@ -73,6 +74,11 @@ const Home = () => {
               <h2>{singleUser.email}</h2>
               <h2>this is the latitude : {singleUser.latitude}</h2>
               <h2>this is the longitude : {singleUser.longitude}</h2>
+              <img
+                src={singleUser.userImg}
+                alt="dscs"
+                style={{ width: "4rem" }}
+              />
               <button
                 onClick={() => {
                   blockUser(singleUser._id);
@@ -86,6 +92,8 @@ const Home = () => {
           <h2>no users</h2>
         )}
       </div>
+      <hr />
+      <Map />
     </>
   );
 };
