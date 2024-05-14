@@ -1,36 +1,13 @@
-import React, { useContext, useEffect, useState } from "react";
+import React, { useContext } from "react";
 import { AuthContext } from "../context/AuthContext";
 import axios from "axios";
 import Map from "../components/Map";
-// import { User } from "../types";
 
 const Home = () => {
   const { user } = useContext(AuthContext);
-  const [users, setUsers] = useState<any | null>(null);
+  const { users } = useContext(AuthContext);
+
   const token = localStorage.getItem("token");
-
-  const getAllUsers = async () => {
-    if (!user) {
-      return;
-    }
-    try {
-      const response = await axios.get(
-        "http://localhost:5005/api/users/all-users",
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        }
-      );
-      setUsers(response.data.users);
-    } catch (error) {
-      console.log(error);
-    }
-  };
-
-  useEffect(() => {
-    getAllUsers();
-  }, [user]);
 
   const blockUser = async (userId: string) => {
     try {
