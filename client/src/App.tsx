@@ -10,30 +10,33 @@ import Register from "./pages/Register";
 import Login from "./pages/Login";
 import { AuthContextProvider } from "./context/AuthContext";
 import ProtectedRoute from "./components/ProtectedRoute";
+import { SocketProvider } from "./context/SocketContext";
 
 function App() {
   return (
     <div className="App">
-      <AuthContextProvider>
-        <BrowserRouter>
-          <Navbar />
-          <Routes>
-            <Route
-              path="/"
-              element={
-                <ProtectedRoute>
-                  <Home />
-                </ProtectedRoute>
-              }
-            />
-            <Route path="/register" element={<Register />} />
-            <Route path="/profile" element={<Profile />} />
-            <Route path="/chats" element={<Chat />} />
-            <Route path="/error-page" element={<Error />} />
-            <Route path="/login" element={<Login />} />
-          </Routes>
-        </BrowserRouter>
-      </AuthContextProvider>
+      <SocketProvider>
+        <AuthContextProvider>
+          <BrowserRouter>
+            <Navbar />
+            <Routes>
+              <Route
+                path="/"
+                element={
+                  <ProtectedRoute>
+                    <Home />
+                  </ProtectedRoute>
+                }
+              />
+              <Route path="/register" element={<Register />} />
+              <Route path="/profile" element={<Profile />} />
+              <Route path="/chats" element={<Chat />} />
+              <Route path="/error-page" element={<Error />} />
+              <Route path="/login" element={<Login />} />
+            </Routes>
+          </BrowserRouter>
+        </AuthContextProvider>
+      </SocketProvider>
     </div>
   );
 }
