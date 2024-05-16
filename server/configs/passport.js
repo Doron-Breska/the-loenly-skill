@@ -5,7 +5,7 @@ import UserModal from "../modals/userModal.js";
 dotenv.config();
 
 const passportConfig = () => {
-  console.log(process.env.JWT_SECRET);
+  // console.log(process.env.JWT_SECRET);
   const opts = {
     jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
     secretOrKey: process.env.JWT_SECRET,
