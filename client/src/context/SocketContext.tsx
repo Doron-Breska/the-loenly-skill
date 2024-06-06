@@ -8,7 +8,7 @@ import React, {
 } from "react";
 import { io, Socket } from "socket.io-client";
 
-const SOCKET_URL = "http://localhost:5005"; // Your backend URL
+const SOCKET_URL = "http://localhost:5005";
 
 const SocketContext = createContext<Socket | null>(null);
 

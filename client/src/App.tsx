@@ -2,7 +2,7 @@ import React from "react";
 import { Route, Routes, BrowserRouter } from "react-router-dom";
 import Navbar from "./components/Navbar";
 import Home from "./pages/Home";
-import { useContext } from "react";
+// import { useContext } from "react";
 import Profile from "./pages/Profile";
 import Chat from "./pages/Chat";
 import Error from "./pages/Error";
