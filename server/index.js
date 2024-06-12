@@ -46,19 +46,41 @@ const connectRoutes = () => {
 };
 connectRoutes();
 
-// Socket.IO connection
-io.on("connection", (socket) => {
-  console.log("A user connected");
+// Store users and their socket IDs
+const users = {};
 
-  // Listen for sendMessage events from clients
-  socket.on("sendMessage", (message) => {
-    // Emit the message to all connected clients
-    io.emit("receiveMessage", message);
+io.on("connection", (socket) => {
+  console.log("New client connected:", socket.id);
+
+  socket.on("register", (userId) => {
+    users[userId] = socket.id;
+    console.log(`User registered: ${userId} with socket ID: ${socket.id}`);
   });
 
-  // Handle user disconnect
+  socket.on("privateMessage", ({ message, to }) => {
+    const recipientSocketId = users[to];
+    console.log(`Private message from ${socket.id} to ${to}: ${message}`);
+    if (recipientSocketId) {
+      io.to(recipientSocketId).emit("receiveMessage", {
+        from: socket.id,
+        text: message,
+      });
+      console.log(`Message sent to ${to}`);
+    } else {
+      console.log(`User ${to} not found`);
+    }
+  });
+
   socket.on("disconnect", () => {
-    console.log("A user disconnected");
+    console.log("Client disconnected:", socket.id);
+    // Remove user from the users object
+    for (const [userId, socketId] of Object.entries(users)) {
+      if (socketId === socket.id) {
+        delete users[userId];
+        console.log(`User ${userId} disconnected`);
+        break;
+      }
+    }
   });
 });
 

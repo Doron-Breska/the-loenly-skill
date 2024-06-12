@@ -1,4 +1,4 @@
-import {
+import React, {
   ReactNode,
   createContext,
   useCallback,
@@ -6,8 +6,8 @@ import {
   useEffect,
   useState,
 } from "react";
-import { User } from "../types";
 import axios from "axios";
+import { User } from "../types";
 
 export interface AuthContextType {
   user: User | null;

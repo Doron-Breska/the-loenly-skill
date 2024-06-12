@@ -15,8 +15,8 @@ import { SocketProvider } from "./context/SocketContext";
 function App() {
   return (
     <div className="App">
-      <SocketProvider>
-        <AuthContextProvider>
+      <AuthContextProvider>
+        <SocketProvider>
           <BrowserRouter>
             <Navbar />
             <Routes>
@@ -35,8 +35,8 @@ function App() {
               <Route path="/login" element={<Login />} />
             </Routes>
           </BrowserRouter>
-        </AuthContextProvider>
-      </SocketProvider>
+        </SocketProvider>
+      </AuthContextProvider>
     </div>
   );
 }
