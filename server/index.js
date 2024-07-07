@@ -46,41 +46,19 @@ const connectRoutes = () => {
 };
 connectRoutes();
 
-// Store users and their socket IDs
-const users = {};
-
+// Socket.IO connection
 io.on("connection", (socket) => {
-  console.log("New client connected:", socket.id);
+  console.log("A user connected");
 
-  socket.on("register", (userId) => {
-    users[userId] = socket.id;
-    console.log(`User registered: ${userId} with socket ID: ${socket.id}`);
+  // Listen for sendMessage events from clients
+  socket.on("sendMessage", (message) => {
+    // Emit the message to all connected clients
+    io.emit("receiveMessage", message);
   });
 
-  socket.on("privateMessage", ({ message, to }) => {
-    const recipientSocketId = users[to];
-    console.log(`Private message from ${socket.id} to ${to}: ${message}`);
-    if (recipientSocketId) {
-      io.to(recipientSocketId).emit("receiveMessage", {
-        from: socket.id,
-        text: message,
-      });
-      console.log(`Message sent to ${to}`);
-    } else {
-      console.log(`User ${to} not found`);
-    }
-  });
-
+  // Handle user disconnect
   socket.on("disconnect", () => {
-    console.log("Client disconnected:", socket.id);
-    // Remove user from the users object
-    for (const [userId, socketId] of Object.entries(users)) {
-      if (socketId === socket.id) {
-        delete users[userId];
-        console.log(`User ${userId} disconnected`);
-        break;
-      }
-    }
+    console.log("A user disconnected");
   });
 });
 
