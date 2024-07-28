@@ -57,7 +57,7 @@ export const AuthContextProvider = ({ children }: { children: ReactNode }) => {
           password: password,
         }
       );
-      console.log("this is the results of the fetch", response);
+      console.log("results - login fetch :", response);
       setUser(response.data.user);
       localStorage.setItem("token", response.data.token);
     } catch (error) {
@@ -107,7 +107,7 @@ export const AuthContextProvider = ({ children }: { children: ReactNode }) => {
     }
   };
 
-  const fetchAllUsers = async (token: string) => {
+  const fetchAllUsers = useCallback(async (token: string) => {
     try {
       const response = await axios.get(
         "http://localhost:5005/api/users/all-users",
@@ -117,22 +117,26 @@ export const AuthContextProvider = ({ children }: { children: ReactNode }) => {
           },
         }
       );
+      console.log("results - getAllUsers :", response.data.users);
       setUsers(response.data.users);
     } catch (error) {
       console.log("Error fetching all users:", error);
     }
-  };
+  }, []);
 
   useEffect(() => {
     const token = localStorage.getItem("token");
     if (token) {
-      fetchActiveUser(token).then(() => {
-        if (user) {
-          fetchAllUsers(token);
-        }
-      });
+      fetchActiveUser(token);
     }
-  }, [checkForToken, user]);
+  }, [checkForToken]);
+
+  useEffect(() => {
+    const token = localStorage.getItem("token");
+    if (token && user) {
+      fetchAllUsers(token);
+    }
+  }, [user, fetchAllUsers]);
 
   return (
     <AuthContext.Provider

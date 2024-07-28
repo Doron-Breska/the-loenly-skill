@@ -1,34 +1,50 @@
-// src/contexts/SocketContext.tsx
-import React, {
-  createContext,
-  useContext,
-  useEffect,
-  useState,
-  ReactNode,
-} from "react";
-import { io, Socket } from "socket.io-client";
+import React, { createContext, useContext, useEffect, useState } from "react";
+import io, { Socket } from "socket.io-client";
+import { AuthContextType, AuthContext } from "./AuthContext";
 
-const SOCKET_URL = "http://localhost:5005";
+interface MessagePayload {
+  message: string;
+  from: string;
+  to: string;
+}
 
-const SocketContext = createContext<Socket | null>(null);
+interface SocketContextProps {
+  socket: Socket | null;
+  sendMessage: (payload: MessagePayload) => void;
+}
 
-export const useSocket = () => {
-  return useContext(SocketContext);
-};
+const SocketContext = createContext<SocketContextProps>({
+  socket: null,
+  sendMessage: () => {},
+});
 
-export const SocketProvider = ({ children }: { children: ReactNode }) => {
+export const useSocket = () => useContext(SocketContext);
+
+export const SocketProvider = ({ children }: { children: React.ReactNode }) => {
+  const { user } = useContext<AuthContextType>(AuthContext); // Correctly use the AuthContext
   const [socket, setSocket] = useState<Socket | null>(null);
 
   useEffect(() => {
-    const newSocket = io(SOCKET_URL);
-    setSocket(newSocket);
+    if (user) {
+      const newSocket = io("http://localhost:5005");
+      newSocket.emit("register", user._id);
+      setSocket(newSocket);
 
-    return () => {
-      newSocket.close();
-    };
-  }, []);
+      return () => {
+        newSocket.close();
+      };
+    }
+  }, [user]);
+
+  const sendMessage = (payload: MessagePayload) => {
+    if (socket) {
+      socket.emit("privateMessage", payload);
+    }
+  };
 
   return (
-    <SocketContext.Provider value={socket}>{children}</SocketContext.Provider>
+    <SocketContext.Provider value={{ socket, sendMessage }}>
+      {children}
+    </SocketContext.Provider>
   );
 };
