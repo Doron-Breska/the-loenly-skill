@@ -28,7 +28,10 @@ const Navbar = () => {
         Registration
       </NavLink>
       <NavLink className={activePath === "/chats" ? "active" : ""} to="/chats">
-        Chats
+        Chats (all users)
+      </NavLink>
+      <NavLink className={activePath === "/chats2" ? "active" : ""} to="/chats">
+        Chats (history)
       </NavLink>
       <NavLink className={activePath === "/login" ? "active" : ""} to="/login">
         Login

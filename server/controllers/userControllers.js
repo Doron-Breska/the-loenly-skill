@@ -236,6 +236,95 @@ const blockUser = async (req, res) => {
   }
 };
 
+const editUser = async (req, res) => {
+  try {
+    const user = req.user; // Access the user object from req.user
+
+    // Check for fields in the request body and compare with current user object
+    const updates = {};
+
+    if (req.body.email && req.body.email !== user.email) {
+      updates.email = req.body.email;
+    }
+    if (req.body.username && req.body.username !== user.username) {
+      updates.username = req.body.username;
+    }
+    if (req.body.age && req.body.age !== user.age) {
+      updates.age = req.body.age;
+    }
+    if (req.body.bio && req.body.bio !== user.bio) {
+      updates.bio = req.body.bio;
+    }
+    if (req.body.sex && req.body.sex !== user.sex) {
+      updates.sex = req.body.sex;
+    }
+    if (req.body.latitude && Number(req.body.latitude) !== user.latitude) {
+      updates.latitude = Number(req.body.latitude);
+    }
+    if (req.body.longitude && Number(req.body.longitude) !== user.longitude) {
+      updates.longitude = Number(req.body.longitude);
+    }
+    if (req.body.password) {
+      const encryptedPassword = await encryptPassword(req.body.password);
+      updates.password = encryptedPassword;
+    }
+    if (
+      req.body.skills &&
+      JSON.stringify(req.body.skills) !== JSON.stringify(user.skills)
+    ) {
+      updates.skills = req.body.skills;
+    }
+    if (
+      req.body.feedback &&
+      JSON.stringify(req.body.feedback) !== JSON.stringify(user.feedback)
+    ) {
+      updates.feedback = req.body.feedback;
+    }
+    if (
+      req.body.chats &&
+      JSON.stringify(req.body.chats) !== JSON.stringify(user.chats)
+    ) {
+      updates.chats = req.body.chats;
+    }
+    if (
+      req.body.hasMet &&
+      JSON.stringify(req.body.hasMet) !== JSON.stringify(user.hasMet)
+    ) {
+      updates.hasMet = req.body.hasMet;
+    }
+
+    if (req.file) {
+      const userImg = await imageUpload(req.file, "skills-users");
+      updates.userImg = userImg;
+    }
+
+    if (Object.keys(updates).length === 0) {
+      return res
+        .status(400)
+        .json({ message: "No updates provided or values are the same" });
+    }
+
+    // Update user object in database
+    const updatedUser = await UserModel.findByIdAndUpdate(
+      user._id,
+      { $set: updates },
+      { new: true }
+    ).lean();
+
+    if (!updatedUser) {
+      return res.status(404).json({ message: "User not found" });
+    }
+
+    res.status(200).json({
+      status: "Success",
+      user: updatedUser,
+    });
+  } catch (error) {
+    console.error("Error updating user:", error);
+    res.status(500).json({ status: "Error", message: "Internal server error" });
+  }
+};
+
 export {
   createUser,
   login,
@@ -243,4 +332,5 @@ export {
   getAllUsers,
   getAllUsersNoFilter,
   blockUser,
+  editUser,
 };

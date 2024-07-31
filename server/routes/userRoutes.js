@@ -2,6 +2,7 @@ import express from "express";
 import {
   blockUser,
   createUser,
+  editUser,
   getActiveUser,
   getAllUsers,
   getAllUsersNoFilter,
@@ -18,5 +19,6 @@ userRouter.get("/active", jwtAuth, getActiveUser);
 userRouter.get("/all-users", jwtAuth, getAllUsers);
 userRouter.get("/all-users-no-filetr", getAllUsersNoFilter);
 userRouter.post("/block", jwtAuth, blockUser);
+userRouter.put("/edit", jwtAuth, multerUpload.single("userImg"), editUser);
 
 export default userRouter;

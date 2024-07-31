@@ -11,6 +11,7 @@ import Login from "./pages/Login";
 import { AuthContextProvider } from "./context/AuthContext";
 import ProtectedRoute from "./components/ProtectedRoute";
 import { SocketProvider } from "./context/SocketContext";
+import ChatRoom2 from "./pages/ChatRoom2";
 
 function App() {
   return (
@@ -31,6 +32,7 @@ function App() {
               <Route path="/register" element={<Register />} />
               <Route path="/profile" element={<Profile />} />
               <Route path="/chats" element={<ChatRoom />} />
+              <Route path="/chats2" element={<ChatRoom2 />} />
               <Route path="/error-page" element={<Error />} />
               <Route path="/login" element={<Login />} />
             </Routes>
