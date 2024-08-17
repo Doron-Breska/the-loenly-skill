@@ -249,9 +249,6 @@ const editUser = async (req, res) => {
     if (req.body.username && req.body.username !== user.username) {
       updates.username = req.body.username;
     }
-    if (req.body.age && req.body.age !== user.age) {
-      updates.age = req.body.age;
-    }
     if (req.body.bio && req.body.bio !== user.bio) {
       updates.bio = req.body.bio;
     }
@@ -324,6 +321,52 @@ const editUser = async (req, res) => {
     res.status(500).json({ status: "Error", message: "Internal server error" });
   }
 };
+const updateUserChats = async (req, res) => {
+  try {
+    const { otherUserId } = req.body;
+    const senderId = req.user._id;
+
+    // Fetch the sender and recipient from the database
+    const sender = await UserModel.findById(senderId);
+    const recipient = await UserModel.findById(otherUserId);
+
+    if (!sender || !recipient) {
+      return res
+        .status(404)
+        .json({ status: "Error", message: "User not found" });
+    }
+
+    // Check if the otherUserId is already in the sender's chats
+    let senderHasChat = sender.chats.some(
+      (chatArray) => Array.isArray(chatArray) && chatArray.includes(otherUserId)
+    );
+
+    if (!senderHasChat) {
+      sender.chats.push([otherUserId]);
+      await sender.save();
+    }
+
+    // Check if the senderId is already in the recipient's chats
+    let recipientHasChat = recipient.chats.some(
+      (chatArray) => Array.isArray(chatArray) && chatArray.includes(senderId)
+    );
+
+    if (!recipientHasChat) {
+      recipient.chats.push([senderId]);
+      await recipient.save();
+    }
+
+    res.status(200).json({
+      status: "Success",
+      message: "Chats updated successfully",
+      updatedSender: sender,
+      updatedRecipient: recipient,
+    });
+  } catch (error) {
+    console.error("Error updating user chats:", error);
+    res.status(500).json({ status: "Error", message: "Internal server error" });
+  }
+};
 
 export {
   createUser,
@@ -333,4 +376,5 @@ export {
   getAllUsersNoFilter,
   blockUser,
   editUser,
+  updateUserChats,
 };
