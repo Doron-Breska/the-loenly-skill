@@ -71,5 +71,24 @@ const createChatWithMessage = async (req, res) => {
     res.status(500).json({ status: "Error", message: "Internal server error" });
   }
 };
+const getChatById = async (req, res) => {
+  try {
+    const { chatId } = req.body;
+    let chat = await ChatModal.findById(chatId).populate({ path: "messages" });
+    if (chat) {
+      return res.status(201).json({
+        status: "Success",
+        chat: chat,
+      });
+    } else {
+      return res
+        .status(404)
+        .json({ status: "Error", message: "Chat not found" });
+    }
+  } catch (error) {
+    console.error("Somthing went wrong", error);
+    res.status(500).json({ status: "Error", message: "Internal server error" });
+  }
+};
 
-export default createChatWithMessage;
+export { createChatWithMessage, getChatById };

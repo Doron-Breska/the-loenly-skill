@@ -62,8 +62,16 @@ const createUser = async (req, res) => {
 
 const login = async (req, res) => {
   try {
-    const existingUser = await UserModel.findOne({ email: req.body.email });
-
+    const existingUser = await UserModel.findOne({
+      email: req.body.email,
+    }).populate({
+      path: "chats",
+      select: ["participants", "createdAt", "updatedAt"],
+      populate: {
+        path: "participants",
+        select: "username",
+      },
+    });
     if (!existingUser) {
       return res.status(404).json({ error: "No user found" });
     }
@@ -112,17 +120,31 @@ const login = async (req, res) => {
 
 const getActiveUser = async (req, res) => {
   try {
-    const user = req.user; // Access the user object from req.user cause in passport.js i get the whole user object
+    const user = await UserModel.findById(req.user._id)
+      .populate({
+        path: "chats",
+        select: ["participants", "createdAt", "updatedAt"],
+        populate: {
+          path: "participants",
+          select: "username",
+        },
+      })
+      .lean();
+
+    if (!user) {
+      return res
+        .status(404)
+        .json({ status: "Error", message: "User not found" });
+    }
+
     res.status(200).json({
       status: "Success",
       activeUser: {
         _id: user._id,
         userType: user.userType,
         verified: user.verified,
-        // isBanned: existingUser.isBanned,
         blockedUsers: user.blockedUsers,
         blockedByUsers: user.blockedByUsers,
-        // reportCounter: existingUser.reportCounter,
         email: user.email,
         latitude: user.latitude,
         longitude: user.longitude,
@@ -159,7 +181,15 @@ const getAllUsers = async (req, res) => {
     // Fetch all users excluding those in the excludeIds array
     const users = await UserModel.find({
       _id: { $nin: excludeIds }, // Use $nin to exclude all IDs in the array
-    }).lean();
+    })
+      .populate({
+        path: "chats", // Populate the chats array
+        populate: {
+          path: "participants", // Populate the participants in each chat
+          select: "username", // Only fetch the username field
+        },
+      })
+      .lean();
 
     res.status(200).json({ status: "Success", users: users });
   } catch (error) {

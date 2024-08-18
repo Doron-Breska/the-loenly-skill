@@ -1,57 +1,70 @@
-import React, { useContext, useEffect, useState } from "react";
-import { useSocket } from "../context/SocketContext";
+import React, { useContext, useState } from "react";
 import { AuthContext } from "../context/AuthContext";
-
-interface Message {
-  from: string;
-  text: string;
-}
+import axios from "axios";
+import { Chat, Message } from "../types";
 
 const ChatRoom2: React.FC = () => {
-  const { socket, sendMessage } = useSocket();
-  const { user, users } = useContext(AuthContext);
-  const [message, setMessage] = useState<string>("");
-  const [messages, setMessages] = useState<Message[]>([]);
-  const [activeChat, setActiveChat] = useState<string | null>(null);
+  const { user, fetchActiveUser } = useContext(AuthContext);
+  const [activeChat, setActiveChat] = useState<Chat | null>(null);
+  const [loading, setLoading] = useState(false);
 
-  useEffect(() => {
-    if (socket) {
-      const handleReceiveMessage = (message: Message) => {
-        console.log("Received message:", message);
-        setMessages((prevMessages) => [...prevMessages, message]);
-      };
+  const fetchChatById = async (chatId: string) => {
+    try {
+      setLoading(true);
+      const token = localStorage.getItem("token"); // Get the JWT token from local storage
+      if (!token) {
+        throw new Error("No token found");
+      }
 
-      socket.on("receiveMessage", handleReceiveMessage);
+      const response = await axios.post(
+        `http://localhost:5005/api/msgs/find`,
+        { chatId }, // Pass the chatId in the request body
+        {
+          headers: {
+            Authorization: `Bearer ${token}`, // Include the JWT token in the Authorization header
+          },
+        }
+      );
 
-      return () => {
-        socket.off("receiveMessage", handleReceiveMessage);
-      };
+      setActiveChat(response.data.chat);
+      setLoading(false);
+    } catch (error) {
+      console.error("Error fetching chat:", error);
+      setLoading(false);
     }
-  }, [socket]);
-
-  const handleSendMessage = () => {
-    if (message.trim() && activeChat && user) {
-      console.log(`Sending message: "${message}" to user: ${activeChat}`);
-      sendMessage({ message, from: user.username, to: activeChat });
-      setMessages((prevMessages) => [
-        ...prevMessages,
-        { from: "me", text: message },
-      ]);
-      setMessage("");
-    }
-  };
-
-  const startChat = (userId: string) => {
-    setActiveChat(userId);
-    setMessages([]); // Clear previous messages when starting a new chat
   };
 
   return (
     <div style={{ display: "flex" }}>
       <div>
         <h1>Chat Room</h1>
-        <div style={{ display: "flex", flexDirection: "column" }}></div>
+        <div style={{ display: "flex", flexDirection: "column" }}>
+          {user?.chats &&
+            user.chats.length > 0 &&
+            user.chats.map((chat) => {
+              const chatPartner = chat.participants.find(
+                (participant) => participant._id !== user._id
+              );
+
+              return (
+                <div
+                  key={chat._id}
+                  style={{
+                    border: "2px solid black",
+                    marginBottom: "1rem",
+                    padding: "1rem",
+                  }}
+                >
+                  <h2>Chat with {chatPartner?.username}</h2>
+                  <button onClick={() => fetchChatById(chat._id)}>
+                    Resume Chat
+                  </button>
+                </div>
+              );
+            })}
+        </div>
       </div>
+      {loading && <p>Loading chat...</p>}
       {activeChat && (
         <div
           style={{
@@ -60,22 +73,15 @@ const ChatRoom2: React.FC = () => {
             padding: "1rem",
           }}
         >
-          <h2>Chat</h2>
+          <h2>Chat History</h2>
           <div>
-            {messages.map((msg, index) => (
-              <div key={index}>
-                <strong>{msg.from === "me" ? "me" : msg.from}:</strong>{" "}
-                {msg.text}
+            {activeChat.messages.map((msg: Message) => (
+              <div key={msg._id}>
+                <strong>{msg.sender === user?._id ? "me" : "them"}:</strong>{" "}
+                {msg.content}
               </div>
             ))}
           </div>
-          <input
-            type="text"
-            value={message}
-            onChange={(e) => setMessage(e.target.value)}
-            onKeyPress={(e) => (e.key === "Enter" ? handleSendMessage() : null)}
-          />
-          <button onClick={handleSendMessage}>Send</button>
         </div>
       )}
     </div>

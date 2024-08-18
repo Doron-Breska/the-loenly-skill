@@ -12,6 +12,7 @@ import { User } from "../types";
 export interface AuthContextType {
   user: User | null;
   users: User[] | null;
+  fetchActiveUser: () => void;
   setUser: (user: User | null) => void;
   setUsers: (users: User[] | null) => void;
   Login: (email: string, password: string) => void;
@@ -23,6 +24,7 @@ export interface AuthContextType {
 const initialAuth: AuthContextType = {
   user: null,
   users: null,
+  fetchActiveUser: () => {},
   setUser: () => {
     throw new Error("setUser function not implemented.");
   },
@@ -47,6 +49,26 @@ export const AuthContextProvider = ({ children }: { children: ReactNode }) => {
   const [user, setUser] = useState<User | null>(null);
   const [users, setUsers] = useState<User[] | null>(null);
   const [loading, setLoading] = useState(false);
+
+  const fetchActiveUser = useCallback(async () => {
+    const token = localStorage.getItem("token");
+    if (token) {
+      try {
+        const response = await axios.get(
+          "http://localhost:5005/api/users/active",
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          }
+        );
+        setUser(response.data.activeUser);
+        console.log("fetchActiveUser results", response.data.activeUser);
+      } catch (error) {
+        console.log("Error fetching active user:", error);
+      }
+    }
+  }, []);
 
   const Login = async (email: string, password: string) => {
     try {
@@ -84,58 +106,32 @@ export const AuthContextProvider = ({ children }: { children: ReactNode }) => {
     localStorage.removeItem("token");
   };
 
-  const checkForToken = useCallback(() => {
+  const fetchAllUsers = useCallback(async () => {
     const token = localStorage.getItem("token");
     if (token) {
-      fetchActiveUser(token);
-    }
-  }, []);
-
-  const fetchActiveUser = async (token: string) => {
-    try {
-      const response = await axios.get(
-        "http://localhost:5005/api/users/active",
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        }
-      );
-      setUser(response.data.activeUser);
-    } catch (error) {
-      console.log(error);
-    }
-  };
-
-  const fetchAllUsers = useCallback(async (token: string) => {
-    try {
-      const response = await axios.get(
-        "http://localhost:5005/api/users/all-users",
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        }
-      );
-      console.log("results - getAllUsers :", response.data.users);
-      setUsers(response.data.users);
-    } catch (error) {
-      console.log("Error fetching all users:", error);
+      try {
+        const response = await axios.get(
+          "http://localhost:5005/api/users/all-users",
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          }
+        );
+        console.log("results - getAllUsers :", response.data.users);
+        setUsers(response.data.users);
+      } catch (error) {
+        console.log("Error fetching all users:", error);
+      }
     }
   }, []);
 
   useEffect(() => {
-    const token = localStorage.getItem("token");
-    if (token) {
-      fetchActiveUser(token);
-    }
-  }, [checkForToken]);
+    fetchActiveUser();
+  }, [fetchActiveUser]);
 
   useEffect(() => {
-    const token = localStorage.getItem("token");
-    if (token && user) {
-      fetchAllUsers(token);
-    }
+    fetchAllUsers();
   }, [user, fetchAllUsers]);
 
   return (
@@ -143,6 +139,7 @@ export const AuthContextProvider = ({ children }: { children: ReactNode }) => {
       value={{
         user,
         users,
+        fetchActiveUser,
         setUser,
         setUsers,
         Login,

@@ -27,19 +27,19 @@ export interface Message {
   updatedAt?: string;
 }
 
+export interface Participant {
+  _id: string;
+  username: string;
+}
 
 export interface Chat {
   _id: string;
-  participants: string[];
-  chatType: string // "one-to-one", "group",
-  messages: Message[]
+  participants: Participant[];
+  chatType: string; // "one-to-one", "group",
+  messages: Message[];
   createdAt?: string;
   updatedAt?: string;
 }
-
-
-
-
 
 export interface User {
   img: any;
@@ -63,6 +63,7 @@ export interface User {
   createdAt?: string;
   updatedAt?: string;
 }
+
 
 type Avatar = string | File;
 
