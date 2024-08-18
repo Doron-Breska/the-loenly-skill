@@ -17,22 +17,28 @@ export interface Feedback {
   quote: string;
 }
 
-export interface Chat {
-  _id: string;
-  participants: string[];
-  createdAt?: string;
-  updatedAt?: string;
-}
-
-
 export interface Message {
   _id: string;
   sender: string;
   content: string;
-  chat: string; 
+  chat: string;  // represent Schema.Types.ObjectId of a chat 
+  seen: boolean
   createdAt?: string;
   updatedAt?: string;
 }
+
+
+export interface Chat {
+  _id: string;
+  participants: string[];
+  chatType: string // "one-to-one", "group",
+  messages: Message[]
+  createdAt?: string;
+  updatedAt?: string;
+}
+
+
+
 
 
 export interface User {
@@ -52,7 +58,7 @@ export interface User {
   skills: Skill[];
   sex: Sex;
   feedback: Feedback[];
-  chats: Chat[]; 
+  chats: Chat[];
   hasMet: string[]; 
   createdAt?: string;
   updatedAt?: string;

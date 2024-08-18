@@ -115,8 +115,8 @@ const UserSchema = new Schema(
     ],
     chats: [
       {
-        type: [Schema.Types.ObjectId],
-        ref: "user",
+        type: Schema.Types.ObjectId,
+        ref: "chat", // Updated to reference the Chat model
       },
     ],
     hasMet: [

@@ -11,6 +11,7 @@ const ChatRoom: React.FC = () => {
   const { socket, sendMessage } = useSocket();
   const { user, users } = useContext(AuthContext);
   const [message, setMessage] = useState<string>("");
+  const [name, setName] = useState<string>("");
   const [messages, setMessages] = useState<Message[]>([]);
   const [activeChat, setActiveChat] = useState<string | null>(null);
 
@@ -32,7 +33,7 @@ const ChatRoom: React.FC = () => {
   const handleSendMessage = () => {
     if (message.trim() && activeChat && user) {
       console.log(`Sending message: "${message}" to user: ${activeChat}`);
-      sendMessage({ message, from: user.username, to: activeChat });
+      sendMessage({ message, from: user._id, to: activeChat });
       setMessages((prevMessages) => [
         ...prevMessages,
         { from: "me", text: message },
@@ -62,7 +63,12 @@ const ChatRoom: React.FC = () => {
                 }}
               >
                 <h2>{singleUser.username}</h2>
-                <button onClick={() => startChat(singleUser._id)}>
+                <button
+                  onClick={() => {
+                    startChat(singleUser._id);
+                    setName(singleUser.username);
+                  }}
+                >
                   Start Chat
                 </button>
               </div>
@@ -84,8 +90,7 @@ const ChatRoom: React.FC = () => {
           <div>
             {messages.map((msg, index) => (
               <div key={index}>
-                <strong>{msg.from === "me" ? "me" : msg.from}:</strong>{" "}
-                {msg.text}
+                <strong>{msg.from === "me" ? "me" : name}:</strong> {msg.text}
               </div>
             ))}
           </div>

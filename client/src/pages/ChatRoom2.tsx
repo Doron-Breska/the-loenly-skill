@@ -50,27 +50,7 @@ const ChatRoom2: React.FC = () => {
     <div style={{ display: "flex" }}>
       <div>
         <h1>Chat Room</h1>
-        <div style={{ display: "flex", flexDirection: "column" }}>
-          {users ? (
-            users.map((singleUser) => (
-              <div
-                key={singleUser._id}
-                style={{
-                  border: "2px solid black",
-                  marginBottom: "1rem",
-                  padding: "1rem",
-                }}
-              >
-                <h2>{singleUser.username}</h2>
-                <button onClick={() => startChat(singleUser._id)}>
-                  Start Chat
-                </button>
-              </div>
-            ))
-          ) : (
-            <h2>No users</h2>
-          )}
-        </div>
+        <div style={{ display: "flex", flexDirection: "column" }}></div>
       </div>
       {activeChat && (
         <div

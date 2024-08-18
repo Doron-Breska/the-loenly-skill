@@ -30,7 +30,10 @@ const Navbar = () => {
       <NavLink className={activePath === "/chats" ? "active" : ""} to="/chats">
         Chats (all users)
       </NavLink>
-      <NavLink className={activePath === "/chats2" ? "active" : ""} to="/chats">
+      <NavLink
+        className={activePath === "/chats2" ? "active" : ""}
+        to="/chats2"
+      >
         Chats (history)
       </NavLink>
       <NavLink className={activePath === "/login" ? "active" : ""} to="/login">
