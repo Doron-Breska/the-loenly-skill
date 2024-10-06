@@ -91,4 +91,54 @@ const getChatById = async (req, res) => {
   }
 };
 
-export { createChatWithMessage, getChatById };
+const getAllChats = async (req, res) => {
+  try {
+    // Find the user and populate their chats
+    const user = await UserModel.findById(req.user._id)
+      .populate({
+        path: "chats",
+        select: ["participants", "createdAt", "updatedAt"],
+        populate: {
+          path: "participants",
+          select: "username _id", // Select username and _id of participants
+        },
+      })
+      .lean();
+
+    // Check if the user has any chats
+    if (user.chats && user.chats.length > 0) {
+      // Filter out the logged-in user from the participants in each chat
+      const chats = user.chats.map((chat) => {
+        // Remove the logged-in user from the participants array
+        const otherParticipants = chat.participants.filter(
+          (participant) =>
+            participant._id.toString() !== req.user._id.toString()
+        );
+
+        // Return the chat with filtered participants
+        return {
+          ...chat,
+          participants: otherParticipants,
+        };
+      });
+
+      return res.status(200).json({
+        status: "Success",
+        chats: chats,
+      });
+    } else {
+      return res.status(404).json({
+        status: "Error",
+        message: "No chats found",
+      });
+    }
+  } catch (error) {
+    console.error("Something went wrong", error);
+    return res.status(500).json({
+      status: "Error",
+      message: "Internal server error",
+    });
+  }
+};
+
+export { createChatWithMessage, getChatById, getAllChats };

@@ -35,8 +35,8 @@ export interface Participant {
 export interface Chat {
   _id: string;
   participants: Participant[];
-  chatType: string; // "one-to-one", "group",
-  messages: Message[];
+  chatType?: string; // "one-to-one", "group",
+  messages?: Message[];
   createdAt?: string;
   updatedAt?: string;
 }

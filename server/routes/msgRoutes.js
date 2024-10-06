@@ -1,6 +1,7 @@
 import express from "express";
 import {
   createChatWithMessage,
+  getAllChats,
   getChatById,
 } from "../controllers/msgControllers.js";
 
@@ -11,5 +12,6 @@ const msgRouter = express.Router();
 
 msgRouter.post("/new", jwtAuth, createChatWithMessage);
 msgRouter.post("/find", jwtAuth, getChatById);
+msgRouter.get("/get-all", jwtAuth, getAllChats);
 
 export default msgRouter;
